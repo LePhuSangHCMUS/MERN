@@ -6,13 +6,29 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node index.js",
-    "dev": "nodemon --inspect index.js"
+    "nodemon": "nodemon --inspect index.js",
+    "client": "npm start --prefix client",
+    "dev": "concurrently \"npm run nodemon\" \"npm run client\""
   },
   "author": "PhuSang",
   "license": "ISC",
   "dependencies": {
+    "axios": "^0.19.0",
+    "bcryptjs": "^2.4.3",
+    "concurrently": "^4.1.1",
+    "cookie-parser": "^1.4.4",
+    "dotenv": "^8.0.0",
     "express": "^4.17.1",
+    "express-validator": "^6.1.1",
+    "gravatar": "^1.8.0",
+    "jsonwebtoken": "^8.5.1",
     "mongoose": "^5.6.6",
-    "nodemon": "^1.19.1"
+    "nodemon": "^1.19.1",
+    "passport": "^0.4.0",
+    "passport-jwt": "^4.0.0",
+    "validator": "^11.1.0"
+  },
+  "dependenciesComments": {
+    "concurrnetly": "Dun de chay 2 server react va express cung mot luc trong moi truong dev con product thi se build file. React:Port-3000 => Sua Express: Port-5000 de tranh bi trung "
   }
 }
