@@ -39,6 +39,15 @@ app.use('/api/users', usersRouter)
 app.use('/api/profile', profileRouter)
 app.use('/api/posts', postsRouter)
 
+//Config server static buid app react
+//Khi len server no tu build ra thu muc build
+app.use(express.static('client/build'));
+app.get('*',(req,res)=>{
+    res.sendFile(path.resolve(__dirname,'client','build','index.html'))
+})
+
+
+
 
 ///Connect server
 const PORT = process.env.PORT || 5000;

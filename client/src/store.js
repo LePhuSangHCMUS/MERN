@@ -18,7 +18,9 @@ const store = createStore(
     rootReducer,
     compose(applyMiddleware(...middleware),
     //Them truong nay de su dung redux dev tools
-    window.__REDUX_DEVTOOLS_EXTENSION__&&window.__REDUX_DEVTOOLS_EXTENSION__())
+    //cho nay phai kiem tra vi neu trinh duyet khong cai redux dev tool thi thoi khong cai 
+    //neu khong kiem tra se bi loi apply undefined
+    ...(window.__REDUX_DEVTOOLS_EXTENSION__?[window.__REDUX_DEVTOOLS_EXTENSION__()]:[]))
 );
 store.subscribe(() => {
     console.log(store.getState());
