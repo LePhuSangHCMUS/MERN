@@ -9,6 +9,7 @@ module.exports.postAddPosts = (req, res, next) => {
     const user = req.user;
     //Check validator cho text
     const { errors, isValid } = validatePostInput(req.body);
+
     if (!isValid) {
         return res.status(404).json({ errors })
     }

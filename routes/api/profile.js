@@ -3,20 +3,26 @@ var router = express.Router();
 const profileController = require('../../controllers/profile');
 const passport = require('passport')
 
-//@route POST api/profile/
+//@route GET api/profile/
 //@desc  Return Profile  user 
 //@Access Private
 //truoc khi la gi tren them middlw ware passport nua la xongrouter.get('/',
 router.get('/', passport.authenticate('jwt', { session: false }),
     profileController.getProfile);
 //@route POST api/profile/create
-//@desc  Update or Create Profile  user 
+//@desc   Create Profile  user 
 //@Access Private
 router.post('/create',
     passport.authenticate('jwt', { session: false }),
     profileController.postProfile
 );
-
+//@route POST api/profile/create
+//@desc  Update or Create Profile  user 
+//@Access Private
+router.post('/update',
+    passport.authenticate('jwt', { session: false }),
+    profileController.postUpdateProfile
+);
 //================GIONG MANG XA HOI FACEBOOK LAY THEO ID VA TEN
 //@route GET api/profile/handle/:handle (Handle nhu ten duy nhat tren url)
 //@desc  Return Profile handle

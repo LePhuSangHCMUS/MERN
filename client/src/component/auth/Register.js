@@ -42,7 +42,7 @@ class Register extends Component {
         }
 
         //GOI ACTION (vi dispath hay state muon goi ben store deu phai qua prop nen this.props)
-        console.log(this.props)
+        // console.log(this.props)
         //Trong this.props luon co history de chi router hien hanh
         this.props.registerAction(newUser, this.props.history)
         ///========================================
@@ -53,7 +53,6 @@ class Register extends Component {
     componentWillReceiveProps(nextProps, nextState) {
         //Khi click lan dau thien thi props duoc thay doi 
         //This.props se la props truoc do nen can phair lay next props neu muon lay cai gia tri thay doi do
-        console.log("ThayDoi")
         if (nextProps.errors) {
             this.setState({ errors: nextProps.errors })
         }
@@ -77,7 +76,7 @@ class Register extends Component {
 
                                     <TextFieldGroupInput
                                         type="text"
-                                        errors={this.state.errors.email}
+                                        errors={this.state.errors.name}
                                         placeholder="Name"
                                         name="name"
                                         onChange={this.onChange}
@@ -93,15 +92,15 @@ class Register extends Component {
                                     {/* ======================Password===================*/}
                                     <TextFieldGroupInput
                                         type="password"
-                                        errors={this.state.errors.email}
+                                        errors={this.state.errors.password}
                                         placeholder="Password"
-                                        name="Password"
+                                        name="password"
                                         onChange={this.onChange}
                                     />
                                     {/* ======================Email===================*/}
                                     <TextFieldGroupInput
                                         type="password"
-                                        errors={this.state.errors.email}
+                                        errors={this.state.errors.password2}
                                         placeholder="Comfirm assword"
                                         name="password2"
                                         onChange={this.onChange}

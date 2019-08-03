@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 //Giai ma token thanh du lieu user
 import jwt_decode from 'jwt-decode';
 import TextFieldGroupInput from '../common/TextFieldGroupInput'
-
+import setAuthToken from '../../utils/setAuthToken'
 import axios from 'axios'
 var classNames = require('classnames');
 
@@ -28,9 +28,7 @@ class Login extends Component {
     //Neu khong dung thi pahai dung bind(this) 
     onChange(event) {
         //Dung Handling Multiple Inputs -- Khong can khai bao state hoac la phai trung ten
-        this.setState({ [event.target.name]: event.target.value }, () => {
-            console.log(this.state);
-        });
+        this.setState({ [event.target.name]: event.target.value });
     }
     onSubmit(event) {
         //Ngan hanh dong submit de khong phai load lai trang
@@ -39,7 +37,7 @@ class Login extends Component {
             email: this.state.email,
             password: this.state.password,
         }
-
+        console.log('propsLogin',this.props)
         this.props.loginAction(user, this.props.history);
     }
     //Ham nay chay khi Props Thay Doi va this.props la props truoc do
@@ -49,6 +47,10 @@ class Login extends Component {
         if (nextProps.errors) {
             this.setState({ errors: nextProps.errors }, () => {
             })
+        }
+        //Neu prop tiep theo khong pahi loi thi no da thanh cong redriect sang /daashboard
+        else{
+            this.history.push('/dashboard')
         }
 
         //Truong hop da dang nhap roi va load lai trang thi /login để không muôn hiện ra trang login
@@ -85,11 +87,11 @@ class Login extends Component {
                                     />
                                     {/* ======================Password===================*/}
                                     <TextFieldGroupInput
-                                    type="password"
-                                    errors={this.state.errors.password}
-                                    placeholder="Password"
-                                    name="password"
-                                    onChange={this.onChange}
+                                        type="password"
+                                        errors={this.state.errors.password}
+                                        placeholder="Password"
+                                        name="password"
+                                        onChange={this.onChange}
                                     />
 
                                     <input
@@ -116,6 +118,8 @@ const mapStateToProps = (state, ownProps) => {
 const mapDispatchToProps = (dispatch, ownProps) => {
     return {
         loginAction: (user, history) => {
+
+            
             axios({
                 method: 'post',
                 url: '/api/users/login',
@@ -130,8 +134,15 @@ const mapDispatchToProps = (dispatch, ownProps) => {
                     const userDetail = jwt_decode(token)
                     //Luu token vao store
                     dispatch({ type: 'LOGIN_SUCCESS', user: userDetail })
+
+
+                    //Dang nhap thanh cong load Dashbord ===> Dung vong doi ung dung react de load
+
+
+                    //Xet cap quyen cho axios duoc gui kem theo authozation
+                    setAuthToken(localStorage.jwt_token);
                     //Chuyen huong sang trang profile (/)
-                    history.push('/dashboard')
+                    // history.push('/dashboard')
 
 
                 })

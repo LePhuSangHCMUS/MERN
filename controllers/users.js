@@ -118,11 +118,11 @@ module.exports.postLogin = (req, res, next) => {
                             const SECRETKEY = process.env.SECRETKEY;
 
                             //Signature Token :  Ma Hoa Header+ Payload + Secret de tao ra token nen token cua thong tin nguoi dung duy nhat
-                            //Gui token nay xuong client luu o cookie hoac seesion tuy
-                            jwt.sign(payload, SECRETKEY, { expiresIn: 60000 }, (err, token) => {
+                            //Gui token nay xuong client luu o cookie hoac localStoreage tuy
+                            jwt.sign(payload, SECRETKEY, { expiresIn: "600000" }, (err, token) => {
                                 //Pahi co tu khoa Bearer
                                 res.json({ success: true, token: 'Bearer ' + token })//nguoi cam phieu bearer
-                            })//60 giay - 1phut
+                            })//600000 ms - 10phut
 
 
 

@@ -16,9 +16,11 @@ module.exports.getProfile = (req, res, next) => {
                 errors.noprofile = 'There is no profile for this user';
                 return res.status(404).json(errors)
             }
-            res.json(profile)
+            return res.json({ profile: profile })
         })
-        .catch(err => res.status(404).json(err))
+        .catch(err => {
+            res.status(404).json(err)
+        })
 }
 module.exports.postProfile = (req, res, next) => {
     //Sau khi qua passport thi se luu user vao req.user de biet them doc config/passort
@@ -34,20 +36,16 @@ module.exports.postProfile = (req, res, next) => {
     if (req.body.location) profileFields.location = req.body.location;
     if (req.body.bio) profileFields.bio = req.body.bio;
     if (req.body.status) profileFields.status = req.body.status;
+    if (req.body.skills) profileFields.skills = req.body.skills;
     if (req.body.githubusername) profileFields.githubusername = req.body.githubusername;
-    ///Skill - Split into array - exists 
-    if (req.body.skills.length !== 0) {
-        profileFields.skills = req.body.skills.split(',');
-    }
     //SOCIAL
     profileFields.social = {};
     if (req.body.youtube) profileFields.social.youtube = req.body.youtube;
     if (req.body.facebook) profileFields.social.facebook = req.body.facebook;
-    if (req.body.twitter) profileFields.social.twitter = req.body.youtube;
+    if (req.body.twitter) profileFields.social.twitter = req.body.twitter;
     if (req.body.linkedin) profileFields.social.linkedin = req.body.linkedin;
-    if (req.body.instagram) profileFields.social.instagram = req.body.youtube;
-
-
+    if (req.body.instagram) profileFields.social.instagram = req.body.instagram;
+    console.log(profileFields)
     ///VALIDATOR
     //Khai bao erros va isValid dung destructuring
     let { errors, isValid } = validateProfileInput({ ...profileFields });
@@ -60,6 +58,18 @@ module.exports.postProfile = (req, res, next) => {
 
 
 
+    ///Skill - Split into array - exists 
+    if (req.body.skills.length !== 0) {
+        profileFields.skills = req.body.skills.split(',');
+    }
+
+
+
+
+
+
+
+
 
 
     //Education and Expirence de nguoi dung updata sau chi can nhung cai thong tin ca nhan dau tien thoi
@@ -67,32 +77,95 @@ module.exports.postProfile = (req, res, next) => {
         .then(profile => {
             //Profile already exists==> Update profile
             if (profile) {
-                // Update profile
-                console.log(profileFields)
-                Profile.findOneAndUpdate({ userId: user._id }, { $set: profileFields }, { new: true })
-                    .then(profileUpdate => {
-                        res.json({ msg: 'Profile already updated', profileUpdate })
-                    })
+
+                return res.json({ profilealreadyexists: 'Profile already Exists' })
             }
             //Create
             else {
-                //Check if handle exists
+                //Do handle la duy nhat nen kiem tra xe co hadle trung voi nguoi khac da tao hay khong khong Check if handle exists
                 Profile.findOne({ handle: profileFields.handle })
                     .then(profile => {
                         if (profile) {
                             errors.handle = 'That handle aleadey exists'
-                            rs.status(400).json(errors)
+                            res.status(400).json(errors)
                         }
                         //Create profile
                         else {
                             new Profile(profileFields)
                                 .save()
                                 .then(profile => {
-                                    res.json(profile);
+                                    res.json({ profile: profile });
                                 })
                         }
                     })
             }
+        })
+
+}
+
+module.exports.postUpdateProfile = (req, res, next) => {
+    //Sau khi qua passport thi se luu user vao req.user de biet them doc config/passort
+    const user = req.user;
+    //Get fields
+    const profileFields = {};
+    //cai nay chac chan phai co
+    profileFields.userId = user._id;
+    //Kiem tr cac truong nhap o form co co hay khong
+    if (req.body.handle) profileFields.handle = req.body.handle;
+    if (req.body.company) profileFields.company = req.body.company;
+    if (req.body.website) profileFields.website = req.body.website;
+    if (req.body.location) profileFields.location = req.body.location;
+    if (req.body.bio) profileFields.bio = req.body.bio;
+    if (req.body.status) profileFields.status = req.body.status;
+    if (req.body.skills) profileFields.skills = req.body.skills;
+    if (req.body.githubusername) profileFields.githubusername = req.body.githubusername;
+    //SOCIAL
+    profileFields.social = {};
+    if (req.body.youtube) profileFields.social.youtube = req.body.youtube;
+    if (req.body.facebook) profileFields.social.facebook = req.body.facebook;
+    if (req.body.twitter) profileFields.social.twitter = req.body.twitter;
+    if (req.body.linkedin) profileFields.social.linkedin = req.body.linkedin;
+    if (req.body.instagram) profileFields.social.instagram = req.body.instagram;
+    console.log(profileFields)
+    ///VALIDATOR
+    //Khai bao erros va isValid dung destructuring
+    let { errors, isValid } = validateProfileInput({ ...profileFields });
+    //Neu co loi tuc isValid==false (khong rong) thi tra ve loi
+    if (!isValid) {
+        return res.status(400).json(errors);
+    }
+
+
+
+
+
+    ///Skill - Split into array - exists 
+    if (req.body.skills.length !== 0) {
+        profileFields.skills = req.body.skills.split(',');
+    }
+
+
+
+
+
+
+
+
+
+
+    //Education and Expirence de nguoi dung updata sau chi can nhung cai thong tin ca nhan dau tien thoi
+    Profile.findOneAndUpdate({ userId: user._id }, profileFields, {
+        new: true//Them dong nay se tra ve new profile chu khong phai profile
+    })
+        .then(profile => {
+            if (profile) {
+
+                res.status(200).json({ profile: profile, profileFields: profileFields })
+            }
+            res.status(404).json({ profilenotfound: 'profile not found' })
+
+
+
         })
 
 }
@@ -106,7 +179,7 @@ module.exports.getHandleProfile = (req, res, next) => {
                 errors.noprofile = 'there is no profile for this user handle';
                 return res.status(404).json(errors)
             }
-            res.status(200).json(profile)
+            res.status(200).json({profile:profile})
         })
 }
 module.exports.getIdProfile = (req, res, next) => {
@@ -119,7 +192,7 @@ module.exports.getIdProfile = (req, res, next) => {
                 errors.noprofile = 'there is no profile for this user handle';
                 return res.status(404).json(errors)
             }
-            res.status(200).json(profile)
+            res.status(200).json({profile:profile})
         })
         .catch(err => {
             //Truong hop id khong cast thanh HEX 24 ki tuj cung bi loi 
@@ -132,12 +205,12 @@ module.exports.getAllProfile = (req, res, next) => {
     Profile.find()
         //Lay luon thong tin ma useId references,phan [] la muon lay nhung gi
         .populate('userId', ['name', 'avatar'])
-        .then(profile => {
-            if (!profile) {
+        .then(profiles => {
+            if (!profiles) {
                 errors.noprofile = 'there is no profile for this user handle';
                 return res.status(404).json(errors)
             }
-            res.status(200).json(profile)
+            res.status(200).json({profiles:profiles})
         })
         .catch(err => {
             //Truong hop id khong cast thanh HEX 24 ki tuj cung bi loi 
@@ -150,9 +223,10 @@ module.exports.getAllProfile = (req, res, next) => {
 module.exports.postAddExperience = (req, res, next) => {
     const user = req.user;
     ///Check validation
+    console.log("Roi ne")
     const { errors, isValid } = validateExperienceInput(req.body);
     if (!isValid) {
-        return res.status(404).json({ errors });
+        return res.status(404).json(errors );
     }
     Profile.findOne({ userId: user._id })
         .then(profile => {
@@ -183,7 +257,7 @@ module.exports.postAddEducation = (req, res, next) => {
     ///Check validation
     const { errors, isValid } = validateEducationInput(req.body);
     if (!isValid) {
-        return res.status(404).json({ errors });
+        return res.status(404).json( errors );
     }
     Profile.findOne({ userId: user._id })
         .then(profile => {
@@ -200,7 +274,7 @@ module.exports.postAddEducation = (req, res, next) => {
             profile.education.unshift(newEdu);//Tren len dau con push tren vao cuoi
             profile.save()
                 .then(newEdu => {
-                    res.json({ msg: 'Create Experience sussecc', newEdu });
+                    res.json(newEdu);
                 })
                 .catch(err => {
                     console.log(err)
@@ -222,7 +296,7 @@ module.exports.deleteExperience = (req, res, next) => {
             profile.experience = newExp;
             profile.save()
                 .then(newProfile => {
-                    res.send({ msg: 'delete Experience success', newProfile })
+                    res.send({newProfile:newProfile})
                 })
         })
         .catch(err => {
@@ -244,7 +318,7 @@ module.exports.deleteEducation = (req, res, next) => {
             profile.education = newEdu;
             profile.save()
                 .then(newProfile => {
-                    res.send({ msg: 'delete Educaton success', newProfile })
+                    res.send( {newProfile:newProfile})
                 })
         })
         .catch(err => {
@@ -258,9 +332,7 @@ module.exports.deleteProfile = (req, res, next) => {
 
     Profile.findOneAndDelete({ userId: user._id })
         .then(result => {
-            User.findOneAndDelete({ _id: user._id })
-                .then(result => {
-                    res.json({msg:'Delete Profile AND User Success'})
-                })
+            res.send({ msg: 'Delete Profile' })
+
         })
 }

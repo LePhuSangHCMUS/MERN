@@ -1,10 +1,10 @@
 import React, { Component } from 'react'
 import { Link } from 'react-router-dom'
 import { connect } from 'react-redux';
+import { withRouter } from 'react-router'
+
+import setAuthToken from '../../utils/setAuthToken'
 //Giai ma token thanh du lieu user
-import jwt_decode from 'jwt-decode';
-import axios from 'axios'
-var classNames = require('classnames');
 class Navigation extends Component {
 
     logoutUser = () => {
@@ -13,9 +13,12 @@ class Navigation extends Component {
         //Deo hieu sao this.props khong co history de push /login hoac / vao
         // this.props.history.push('/login')
 
+        //Xoa quyen cua aixos di
+        setAuthToken(false);
+console.log(this.props.history
+    )
         // ===>Danh phai dispath sua lai tren store
-
-        this.props.logoutUserStore();
+        this.props.logoutUserStore(this.props.history);
     }
     render() {
         return (
@@ -31,6 +34,9 @@ class Navigation extends Component {
                             <ul className="navbar-nav mr-auto">
                                 <li className="nav-item">
                                     <Link to="/profiles" className="nav-link" > Developers</Link>
+                                </li>
+                                <li className="nav-item">
+                                    <Link to="/dashboard" className="nav-link" >Dashboard</Link>
                                 </li>
                             </ul>
                             {/*===============================LOGIN_REGISTER=======================================*/}
@@ -48,14 +54,14 @@ class Navigation extends Component {
                             {/*===============================LOG OUT=======================================*/}
                             {/*Nếu đã xac thuc thi render lout va avatar */}
                             {this.props.isAuthenticated && (
-                                <ul className="navbar-nav ml-auto align-items-center">
+                                <ul className="navbar-nav ml-auto d-flex align-items-center">
                                     <li className="nav-item">
-                                        <Link to="/dashboard" className="nav-link" >
+                                        <Link to="/profile"className="nav-link" >
                                             <img title={this.props.user.name}style={{ width: 2.5 + 'em' }} className='rounded-circle' src={this.props.user.avatar} alt='avatar'></img>
                                         </Link>
                                     </li>
-                                    <li className="nav-item">
-                                        <Link to onClick={this.logoutUser} className="nav-link" >Logout</Link>
+                                    <li className="nav-item d-flex align-items-center">
+                                        <Link to='#' onClick={this.logoutUser} className="nav-link" >Logout</Link>
                                     </li>
                                 </ul>)
                             }
@@ -71,16 +77,19 @@ class Navigation extends Component {
 const mapStateToProps = (state, ownProps) => {
     return {
         isAuthenticated: state.loginReducer.isAuthenticated,
-        user: state.loginReducer.user
+        user: state.loginReducer.user,
+        profile:state.profileReducer.profile
     }
 }
 const mapDispatchToProps = (dispatch, ownProps) => {
     return {
-        logoutUserStore: () => {
-            dispatch({type:'LOGOUT_USER'})
+        logoutUserStore: (history) => {
+            dispatch({type:'LOGOUT_USER'});
+            history.push('/')
         }
     }
 }
 
 //Neu khong co mapStateToProps phai them null vao truoc
-export default connect(mapStateToProps,mapDispatchToProps)(Navigation);
+
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Navigation));

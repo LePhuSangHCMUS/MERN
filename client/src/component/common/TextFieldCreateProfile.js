@@ -1,10 +1,7 @@
 import React, { Component } from 'react'
-
-//Component hoa input form lai
 var classNames = require('classnames');
 
-
-export default class TextField extends Component {
+export default class TextFieldCreateProfile extends Component {
     render() {
         return (
             <div>
@@ -15,8 +12,10 @@ export default class TextField extends Component {
                         placeholder={this.props.placeholder}
                         name={this.props.name}
                         onChange={this.props.onChange}
-                        disabled={this.props.disabled}
-                                         />
+                        defaultValue={this.props.value}
+                    />
+                    <small className="form-text text-muted">{this.props.hintInput}</small>
+
                     {/*Hien thi loi .Vi khong dung if ne phai dung tona tu so sanh thay the */}
                     {this.props.errors && (<span className='invalid-feedback'>{this.props.errors}</span>)}
                 </div>
@@ -24,3 +23,4 @@ export default class TextField extends Component {
         )
     }
 }
+

@@ -98,7 +98,7 @@ const ProfileSchema = new Schema({
         linkedin: String,
         instagram: String
     },
-    data: {
+    date: {
         type: Date,
         default: Date.now
     }
